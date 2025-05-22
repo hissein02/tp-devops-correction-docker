@@ -26,7 +26,7 @@ jobs:
 
       - name: SonarCloud Analysis
         working-directory: simple-api
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=tp-devops-simple-api -Dsonar.organization=hissein02 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file ./pom.xml
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=hissein02_tp-devops-correction-docker -Dsonar.organization=hissein02 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file ./pom.xml
 
   # define job to build and publish docker image
   build-and-push-docker-image:
