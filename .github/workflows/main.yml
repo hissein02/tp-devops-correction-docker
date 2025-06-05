@@ -68,7 +68,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-frontend:latest
 
   deploy-on-server:
-    needs: build-and-push-docker-image
+    # needs: build-and-push-docker-image
     runs-on: ubuntu-latest
     
     steps:
