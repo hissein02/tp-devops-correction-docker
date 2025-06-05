@@ -67,7 +67,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
 
   deploy:
-    needs: build-and-push-docker-image
+    # needs: build-and-push-docker-image
     runs-on: ubuntu-latest
     
     steps:
@@ -78,7 +78,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hissein02/DevOPs_MLOps
-          path: DevOPs_MLOps/tp3/ansible
+          path: DevOPs_MLOps
           token: ${{ secrets.ANSIBLE_REPO_PAT }}
 
       - name: Set up Python
@@ -105,9 +105,12 @@ jobs:
           echo "Current directory:"
           pwd
           echo "Directory structure:"
-          ls -R DevOPs_MLOps
+          ls -R DevOPs_MLOps/tp3/ansible
           # Navigate and run ansible
-          cd DevOPs_MLOps/tp3/ansible
+          cd DevOPs_MLOps
+          echo "Looking for playbook in:"
+          find . -name "playbook.yml"
+          cd tp3/ansible
           echo "Ansible directory contents:"
           ls -la
           ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file ../../../vault_pass.txt
