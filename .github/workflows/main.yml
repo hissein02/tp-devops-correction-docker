@@ -65,3 +65,44 @@ jobs:
           context: ./http-server
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+
+  deploy:
+    needs: build-and-push-docker-image
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+
+      - name: Checkout ansible repository
+        uses: actions/checkout@v4
+        with:
+          repository: hissein02/DevOPs_MLOps
+          path: DevOPs_MLOps/tp3/ansible
+          token: ${{ secrets.ANSIBLE_REPO_PAT }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible
+
+      - name: Add SSH private key
+        run: |
+          echo "${{ secrets.DEPLOY_KEY }}" > id_rsa
+          chmod 600 id_rsa
+
+      - name: Deploy with Ansible
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: false
+        run: |
+          echo "${{ secrets.VAULT_PASS }}" > vault_pass.txt
+          cd DevOPs_MLOps/tp3/ansible
+          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file ../../../vault_pass.txt
+          rm ../../../vault_pass.txt
+
+          
