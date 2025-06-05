@@ -96,3 +96,5 @@ jobs:
           echo "${{ secrets.VAULT_PASS }}" > vault_pass.txt
           ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file vault_pass.txt --private-key ./id_rsa
           rm vault_pass.txt id_rsa
+
+          
