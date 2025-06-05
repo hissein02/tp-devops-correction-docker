@@ -91,29 +91,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible
 
-      - name: Add SSH private key
-        run: |
-          echo "${{ secrets.DEPLOY_KEY }}" > id_rsa
-          chmod 600 id_rsa
-
       - name: Deploy with Ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: false
         run: |
           echo "${{ secrets.VAULT_PASS }}" > vault_pass.txt
-          # Debug: List directory structure
-          echo "Current directory:"
-          pwd
-          echo "Directory structure:"
-          ls -R DevOPs_MLOps/tp3/ansible
-          # Navigate and run ansible
           cd DevOPs_MLOps
-          echo "Looking for playbook in:"
-          find . -name "playbook.yml"
+          echo "${{ secrets.DEPLOY_KEY }}" > ../id_rsa
+          chmod 600 ../id_rsa
           cd tp3/ansible
-          echo "Ansible directory contents:"
-          ls -la
-          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file ../../../vault_pass.txt
-          rm ../../../vault_pass.txt
+          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file ../../../vault_pass.txt --private-key ../../../id_rsa
+          rm ../../../vault_pass.txt ../../../id_rsa
 
           
