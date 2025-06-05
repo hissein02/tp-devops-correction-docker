@@ -94,10 +94,13 @@ jobs:
       - name: Deploy with Ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: false
-          ANSIBLE_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.VAULT_PASS }}
         run: |
+          # Create SSH key
+          echo "${{ secrets.DEPLOY_KEY }}" > id_rsa
+          chmod 600 id_rsa
+          
+          # Create vault pass and run ansible
           cd DevOPs_MLOps/tp3/ansible
-          ansible-playbook -i inventories/setup.yml playbook.yml \
-            --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD") \
-            --private-key <(echo "$ANSIBLE_SSH_PRIVATE_KEY")
+          echo "${{ secrets.VAULT_PASS }}" > vault_pass.txt
+          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file vault_pass.txt
+          rm vault_pass.txt
