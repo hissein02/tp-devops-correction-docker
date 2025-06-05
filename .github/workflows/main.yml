@@ -94,12 +94,17 @@ jobs:
       - name: Deploy with Ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: false
-          ANSIBLE_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.VAULT_PASS }}
         run: |
+          # Start ssh-agent and add key
+          eval "$(ssh-agent -s)"
+          ssh-add - <<< "${{ secrets.DEPLOY_KEY }}"
+          
+          # Run ansible
           cd DevOPs_MLOps/tp3/ansible
           ansible-playbook -i inventories/setup.yml playbook.yml \
-            --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD") \
-            --private-key <(echo "$ANSIBLE_SSH_PRIVATE_KEY")
+            --vault-password-file <(echo "${{ secrets.VAULT_PASS }}")
+          
+          # Kill ssh-agent
+          kill $SSH_AGENT_PID
 
           
