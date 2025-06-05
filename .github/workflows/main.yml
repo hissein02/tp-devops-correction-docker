@@ -95,12 +95,19 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: false
         run: |
-          echo "${{ secrets.VAULT_PASS }}" > vault_pass.txt
-          cd DevOPs_MLOps
-          echo "${{ secrets.DEPLOY_KEY }}" > ../id_rsa
-          chmod 600 ../id_rsa
-          cd tp3/ansible
-          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file ../../../vault_pass.txt --private-key ../../../id_rsa
-          rm ../../../vault_pass.txt ../../../id_rsa
+          # Create SSH key with proper permissions
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # Create vault password file
+          echo "${{ secrets.VAULT_PASS }}" > ~/.vault_pass.txt
+          
+          # Run ansible
+          cd DevOPs_MLOps/tp3/ansible
+          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file ~/.vault_pass.txt --private-key ~/.ssh/id_rsa
+          
+          # Cleanup
+          rm ~/.vault_pass.txt ~/.ssh/id_rsa
 
           
