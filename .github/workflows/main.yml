@@ -60,6 +60,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
 
+      - name: Build image and push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./devops-front-main
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-frontend:latest
+
   deploy-on-server:
     needs: build-and-push-docker-image
     runs-on: ubuntu-latest
