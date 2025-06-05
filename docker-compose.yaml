@@ -21,6 +21,16 @@ services:
     build: "http-server"
     ports:
       - "80:80"
+    depends_on:
+      - simple-api
+      - frontend
+    networks:
+      - my-network
+    
+  frontend:
+    build: "devops-front-main"
+    depends_on:
+      - simple-api
     networks:
       - my-network
 
