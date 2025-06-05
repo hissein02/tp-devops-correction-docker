@@ -101,7 +101,15 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: false
         run: |
           echo "${{ secrets.VAULT_PASS }}" > vault_pass.txt
+          # Debug: List directory structure
+          echo "Current directory:"
+          pwd
+          echo "Directory structure:"
+          ls -R DevOPs_MLOps
+          # Navigate and run ansible
           cd DevOPs_MLOps/tp3/ansible
+          echo "Ansible directory contents:"
+          ls -la
           ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file ../../../vault_pass.txt
           rm ../../../vault_pass.txt
 
