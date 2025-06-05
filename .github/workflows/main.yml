@@ -9,17 +9,14 @@ jobs:
   test-backend: 
     runs-on: ubuntu-24.04
     steps:
-     #checkout your github code using actions/checkout@v4
       - uses: actions/checkout@v4
 
-     #do the same with another action (actions/setup-java@v4) that enable to setup jdk 21
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-     #finally build your app with the latest command
       - name: Build and test with Maven
         working-directory: simple-api
         run: mvn clean verify
@@ -28,13 +25,10 @@ jobs:
         working-directory: simple-api
         run: mvn -B verify sonar:sonar -Dsonar.projectKey=hissein02_tp-devops-correction-docker -Dsonar.organization=hissein02 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file ./pom.xml
 
-  # define job to build and publish docker image
   build-and-push-docker-image:
     needs: test-backend
-    # run only when code is compiling and tests are passing
     runs-on: ubuntu-24.04
 
-    # steps to perform in job
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,8 +60,8 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
 
-  deploy:
-    # needs: build-and-push-docker-image
+  deploy-on-server:
+    needs: build-and-push-docker-image
     runs-on: ubuntu-latest
     
     steps:
@@ -95,12 +89,10 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: false
         run: |
-          # Create SSH key with absolute path
           cd DevOPs_MLOps/tp3/ansible
           echo "${{ secrets.DEPLOY_KEY }}" > ./id_rsa
           chmod 600 ./id_rsa
           
-          # Create vault pass and run ansible
           echo "${{ secrets.VAULT_PASS }}" > vault_pass.txt
           ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file vault_pass.txt --private-key ./id_rsa
           rm vault_pass.txt id_rsa
